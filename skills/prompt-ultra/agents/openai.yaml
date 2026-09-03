@@ -1,0 +1,6 @@
+interface:
+  display_name: "Prompt Ultra"
+  short_description: "复杂任务执行前的输入审查、澄清、契约确认与异常处置"
+  default_prompt: "Use $prompt-ultra to inspect and strengthen this complex request before execution."
+policy:
+  allow_implicit_invocation: true

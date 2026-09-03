@@ -6,10 +6,27 @@ Ultra 系列 Agent Skills，用于 Qoder / Claude Code / 兼容 SKILL.md 规范�
 
 | 技能 | 用途 | 输出 |
 | --- | --- | --- |
+| [`prompt-ultra`](skills/prompt-ultra) | 在复杂或高影响任务执行前审查输入、澄清关键缺口并建立任务契约 | 强化 Prompt / 澄清问题 / 执行契约 |
 | [`learn-ultra`](skills/learn-ultra) | 把 GitHub 仓库、论文或技术文章转成逐模块、逐观点的深度解析报告 | 单文件离线 HTML（TOC 侧栏 + Mermaid + 代码/大白话双栏） |
-| [`figure-ultra`](skills/figure-ultra) | 统一图表生成，三引擎自动路由 | `.drawio` / `.excalidraw` / dpi=300 PNG |
-| [`tikz-ultra`](skills/tikz-ultra) | 生成、修改、编译与导出可复现的 TikZ/PGF 学术图 | `.tex` / PDF / PNG / SVG |
+| [`figure-ultra`](skills/figure-ultra) | 通用可视化与图片交付，三引擎自动路由 | `.drawio` / `.excalidraw` / PNG / SVG / PDF |
+| [`tikz-ultra`](skills/tikz-ultra) | LaTeX 原生、源码可复现的 TikZ/PGF 绘图工作流 | `.tex` / PDF / PNG / SVG |
 | [`paper-ultra`](skills/paper-ultra) | 修改、翻译与审阅论文，同时保护证据和贡献边界 | 修订稿 / 审阅意见 / 双语同步文本 |
+
+---
+
+## prompt-ultra
+
+复杂任务的输入门控技能。在模型需要自主决策，或任务达到中等及以上复杂度、具有重要影响、存在外部副作用时，先把用户输入整理成可执行的任务契约，再开始实质工作。
+
+核心能力：
+
+- 检查目标、背景、受众、输入、交付物、范围、约束、证据、权限、验收标准、优先级和异常处置
+- 区分已知信息、安全假设、关键缺口和可延后决策
+- 只追问会实质改变方案、权限、风险或验收结果的问题，避免无休止澄清
+- 对高风险任务先确认契约；对信息充分的中等任务可声明假设后直接执行
+- 将任务契约转换为直接、准确、无套话和无刻意修辞的执行 Prompt
+
+触发场景：`prompt-ultra`、Prompt 优化、需求澄清、任务拆解，以及任何涉及多阶段执行、自主决策、重要修改、架构/策略选择、外部副作用或验收标准不明确的任务。简单、低风险且成功标准显然的请求默认跳过。
 
 ---
 
@@ -35,6 +52,8 @@ Ultra 系列 Agent Skills，用于 Qoder / Claude Code / 兼容 SKILL.md 规范�
 
 统一图表生成技能，**Draw.io + Excalidraw + Matplotlib 三引擎**，由路由按需求特征自动选择。
 
+与 `tikz-ultra` 的边界由**交付介质**决定：需要通用图片或 `.drawio` / `.excalidraw` / Matplotlib 时使用 `figure-ultra`；需要 `.tex` / `tikzpicture`、LaTeX 原生嵌入或 TikZ 编译时使用 `tikz-ultra`。若用户只说“画架构图”“生成论文配图”而未指定技术，默认使用 `figure-ultra`。
+
 | 需求特征 | 引擎 | 输出 |
 | --- | --- | --- |
 | 论文/技术文档配图、架构/流程/时序/ER/状态/思维导图、需导出 PNG/SVG/PDF | Draw.io | `.drawio` + 可导出 |
@@ -47,7 +66,7 @@ Ultra 系列 Agent Skills，用于 Qoder / Claude Code / 兼容 SKILL.md 规范�
 
 **Matplotlib 引擎**：8 种论文图风格（配对柱状 + 增益箭头、分组消融斜线柱、置信带折线、断点训练曲线、L 形 spine + inset、t-SNE 聚类、折断轴散点、双系列雷达），「选模板 + 替换数据区」工作流
 
-触发词：画图、架构图、流程图、时序图、ER 图、状态图、思维导图、模型结构可视化、论文配图、draw.io、Excalidraw、手绘/白板、把数据画出来、折线/柱状/散点/雷达图。
+触发词：画图、架构图、流程图、时序图、ER 图、状态图、思维导图、模型结构可视化、图片型论文配图、draw.io、Excalidraw、手绘/白板、Matplotlib、把数据画出来、折线/柱状/散点/雷达图。明确要求 TikZ/PGF/`.tex` 时转给 `tikz-ultra`。
 
 ---
 
@@ -55,7 +74,7 @@ Ultra 系列 Agent Skills，用于 Qoder / Claude Code / 兼容 SKILL.md 规范�
 
 面向 LaTeX/TikZ 的可复现绘图技能，覆盖路径、节点、矩阵、图层、装饰、流程图、神经网络、有限状态机、树、交换图、统计图和三维图。技能包含精炼参考文档与 13 页原始 TikZ 速查表，并要求先编译、再检查最终尺寸、最后导出。
 
-触发词：TikZ、PGF、LaTeX 绘图、论文矢量图、交换图、状态机图、TikZ 编译错误、把示意图写成 `.tex`。
+触发词：TikZ、PGF、PGFPlots、LaTeX 原生绘图、`tikzpicture`、TikZ 编译错误、修改 TikZ 源码、把示意图写成 `.tex`。仅“论文配图”“流程图”“架构图”等主题描述不触发本技能；未要求 LaTeX 源码时使用 `figure-ultra`。
 
 ---
 
@@ -75,19 +94,51 @@ Ultra 系列 Agent Skills，用于 Qoder / Claude Code / 兼容 SKILL.md 规范�
 
 ---
 
-## 安装
+## 快捷安装
 
-复制到 Agent 的技能目录即可：
+先克隆仓库：
 
 ```bash
 git clone https://github.com/TobyChain/ultra-skills.git
-cp -r ultra-skills/skills/learn-ultra  ~/.qoder/skills/
-cp -r ultra-skills/skills/figure-ultra ~/.qoder/skills/
-cp -r ultra-skills/skills/tikz-ultra   ~/.qoder/skills/
-cp -r ultra-skills/skills/paper-ultra  ~/.qoder/skills/
 ```
 
-其他平台把目标路径换成对应的 skills 目录（如 `~/.claude/skills/`）。
+然后选择所用 Agent，一次安装全部技能：
+
+### TraeCode
+
+```bash
+mkdir -p ~/.trae/skills
+cp -R ultra-skills/skills/. ~/.trae/skills/
+```
+
+### Claude Code
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R ultra-skills/skills/. ~/.claude/skills/
+```
+
+### Qoder
+
+```bash
+mkdir -p ~/.qoder/skills
+cp -R ultra-skills/skills/. ~/.qoder/skills/
+```
+
+只安装单个技能时，把 `skills/.` 换成对应目录。例如：
+
+```bash
+cp -R ultra-skills/skills/figure-ultra ~/.trae/skills/
+```
+
+更新已克隆的仓库并重新覆盖安装：
+
+```bash
+git -C ultra-skills pull --ff-only
+cp -R ultra-skills/skills/. ~/.trae/skills/
+```
+
+安装后重启 Agent 或新建会话，使技能列表重新加载。项目级安装可将技能目录复制到项目根目录的 `.agents/skills/`（Codex/TraeCode）或 `.claude/skills/`（Claude Code）。
 
 **可选依赖**：
 

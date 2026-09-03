@@ -1,6 +1,6 @@
 ---
 name: "tikz-ultra"
-description: "Create, revise, compile, and export precise TikZ/PGF diagrams. Invoke for LaTeX figures, flowcharts, networks, plots, commutative diagrams, 3D drawings, or TikZ debugging."
+description: "Create, revise, compile, debug, and export diagrams whose required source of truth is TikZ/PGF/PGFPlots or LaTeX. Invoke when the user explicitly requests TikZ, PGF, PGFPlots, a .tex file, a tikzpicture fragment, LaTeX-native figures, commutative diagrams in LaTeX, modification of existing TikZ code, or reproducible compilation within a LaTeX project. Do not invoke merely because the subject is a paper figure, flowchart, architecture, network, plot, or 3D drawing; when no LaTeX-native source is required, route visual-file and image deliverables to figure-ultra."
 ---
 
 # TikZ Ultra
@@ -8,6 +8,15 @@ description: "Create, revise, compile, and export precise TikZ/PGF diagrams. Inv
 Create publication-ready TikZ/PGF figures as reproducible LaTeX source. Prefer
 semantic structure, stable geometry, and successful compilation over decorative
 complexity.
+
+## Boundary with figure-ultra
+
+Choose by required source format, not by figure topic:
+
+- Use this skill when `.tex`, `tikzpicture`, TikZ/PGF/PGFPlots, LaTeX-native reuse, or TikZ compilation is required.
+- Use `figure-ultra` when the desired editable source is `.drawio` or `.excalidraw`, when the primary result is an image, when Matplotlib should render supplied data, or when the user asks generically to draw without selecting LaTeX.
+- If the user requests both `.tex` and PNG/SVG/PDF, use this skill once: compile the TikZ source and export from the verified PDF.
+- Use both skills only when the user explicitly requires two independent editable source formats.
 
 ## Required Reference
 

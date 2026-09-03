@@ -1,6 +1,6 @@
 ---
 name: figure-ultra
-description: 统一图表生成技能（Draw.io + Excalidraw + Matplotlib 三引擎）：生成流程图、系统架构图、UML 时序图、ER 图、状态机图、思维导图、数据流图、泳道图、类图、深度学习模型架构图、学科示意图（数理化生史地语）、手绘白板草图，以及论文级数据图（折线图、柱状图、散点图、雷达图，dpi=300）。支持风格迁移、多图文章配图、PNG/SVG/PDF 导出。当用户要求画图、画架构图/流程图/时序图/ER 图/状态图/思维导图、可视化模型结构、论文或技术文章配图、draw.io/.drawio、Excalidraw/手绘/白板，或提供数据要求画折线图/柱状图/散点图/雷达图、导出图片格式时使用本技能；引擎由路由自动选择（结构图 → Draw.io，手绘/白板 → Excalidraw，数据图 → Matplotlib）。
+description: 使用 Draw.io、Excalidraw 或 Matplotlib 创建和修改通用可视化成品，包括架构图、流程图、时序图、ER 图、状态图、思维导图、模型结构图、学科示意图、白板草图和数据图，并导出 .drawio、.excalidraw、PNG、SVG 或 PDF。当用户泛化地要求画图、需要可视化文件或图片、指定 Draw.io/Excalidraw/Matplotlib，或没有指定绘图技术时使用。不要因“论文配图”“流程图”“架构图”等主题词单独改用 tikz-ultra；只有用户明确要求 TikZ/PGF、可嵌入 LaTeX 的 .tex 或 tikzpicture、LaTeX 编译，或目标仓库以 TikZ 为原生图源时才路由到 tikz-ultra。
 ---
 
 # figure-ultra：统一图表技能
@@ -9,13 +9,26 @@ description: 统一图表生成技能（Draw.io + Excalidraw + Matplotlib 三引
 
 整合来源：`drawio-diagram`（模型架构/学术图/学科图/风格迁移）+ `drawio-chart`（业务架构/技术文章配图/导出）+ `excalidraw-diagram`（手绘图）+ `excalidraw-diagram-generator`（图类型模板/图标库）+ `paper-plot-skills/plot-from-data`（8 种论文数据图风格）。
 
-## Step 0：引擎路由（Draw.io vs Excalidraw vs Matplotlib）
+## Step 0：先与 tikz-ultra 分流
+
+按交付介质和生产工作流分流，不按图的主题分流：
+
+| 用户真正需要的交付物 | 使用技能 |
+| --- | --- |
+| `.drawio`、`.excalidraw`、PNG/SVG/PDF 图片、白板图或 Matplotlib 数据图 | **figure-ultra** |
+| 未指定技术，只说“画一个架构图/流程图/论文配图” | **figure-ultra** |
+| `.tex`、`tikzpicture`、TikZ/PGF/PGFPlots 源码或 LaTeX 原生编译工作流 | **tikz-ultra** |
+| 修改、调试或编译已有 TikZ/PGF 代码 | **tikz-ultra** |
+
+用户指定格式时格式优先。用户同时要求 `.tex` 和图片时，以 **tikz-ultra** 生成并编译 `.tex`，再从 PDF 导出图片；不要用两个技能分别重画。仅当用户明确要求两套独立可编辑源文件时才同时使用。
+
+## Step 1：引擎路由（Draw.io vs Excalidraw vs Matplotlib）
 
 | 用户需求特征 | 引擎 | 后续 |
 | --- | --- | --- |
-| 论文/技术文档配图、审稿级严谨、精确坐标对齐、UML 规范 | **Draw.io** | Draw.io Step 1 |
-| 需要导出 PNG/SVG/PDF、`.drawio` 格式 | **Draw.io** | Draw.io Step 1 |
-| 用户明确说「draw.io」「diagrams.net」`.drawio` | **Draw.io** | Draw.io Step 1 |
+| 论文/技术文档的图片型配图、审稿级严谨、精确坐标对齐、UML 规范 | **Draw.io** | Draw.io Step 2 |
+| 需要导出 PNG/SVG/PDF、`.drawio` 格式 | **Draw.io** | Draw.io Step 2 |
+| 用户明确说「draw.io」「diagrams.net」`.drawio` | **Draw.io** | Draw.io Step 2 |
 | 手绘风、白板讨论、草图发散、头脑风暴 | **Excalidraw** | 读 `references/excalidraw-basics.md` |
 | 用户明确说「Excalidraw」`.excalidraw`「手绘」「sketch」 | **Excalidraw** | 同上 |
 | 用户提供数据（数字/数组/CSV）要折线图、柱状图、散点图、雷达图 | **Matplotlib** | 读 `references/plot-catalog.md` |
@@ -27,16 +40,16 @@ description: 统一图表生成技能（Draw.io + Excalidraw + Matplotlib 三引
 
 ## Draw.io 引擎路由
 
-### Step 1：任务模式识别
+### Step 2：任务模式识别
 
 | 模式 | 处理 |
 | --- | --- |
-| 单张图生成 | 继续 Step 2 |
+| 单张图生成 | 继续 Step 3 |
 | 一篇文章生成多张图 | 读 `references/use-cases.md` 多图文章模式（2-6 张、每图一个 diagram page） |
-| 用户提供参考图要求「按这个风格画」 | 读 `references/style-migration.md`，跳过 Step 2 |
+| 用户提供参考图要求「按这个风格画」 | 读 `references/style-migration.md`，跳过 Step 3 |
 | 修改已有 `.drawio` | 读 `references/xml-basics.md` 后按需改动 |
 
-### Step 2：风格预设选择
+### Step 3：风格预设选择
 
 | 场景 | 风格 | 读取 |
 | --- | --- | --- |
@@ -47,7 +60,7 @@ description: 统一图表生成技能（Draw.io + Excalidraw + Matplotlib 三引
 
 判断线索：「论文/模型/Transformer/CNN 架构」→ 学术风；「微服务/网关/数据库/文章配图」→ 产品风。
 
-### Step 3：图表类型路由
+### Step 4：图表类型路由
 
 | 图表类型 | 读取 |
 | --- | --- |
@@ -97,11 +110,12 @@ description: 统一图表生成技能（Draw.io + Excalidraw + Matplotlib 三引
 
 ## 工作流
 
-1. Step 0 完成引擎路由，收集最小必要输入
-2. 按对应引擎的 Step 1-3 完成 reference 路由
-3. 生成顺序：标题 → 容器/分组 → 核心节点 → 连线 → 标签与旁注
-4. 执行核心规则自查清单
-5. 导出仅按用户要求执行（本机无 `drawio` CLI 时保留源文件并给手动命令，见 `references/export-and-files.md`）
+1. Step 0 完成技能分流，确认交付介质
+2. Step 1 完成引擎路由，收集最小必要输入
+3. 按对应引擎的后续步骤完成 reference 路由
+4. 生成顺序：标题 → 容器/分组 → 核心节点 → 连线 → 标签与旁注
+5. 执行核心规则自查清单
+6. 导出仅按用户要求执行（本机无 `drawio` CLI 时保留源文件并给手动命令，见 `references/export-and-files.md`）
 
 ## 验证清单
 

@@ -2,6 +2,17 @@
 
 统一图表生成技能：**Draw.io（结构图）+ Excalidraw（手绘图）+ Matplotlib（数据图）三引擎**，用「路由 + reference」统一管理。主文件只做路由决策与核心规则，详细规范按需加载。
 
+## 与 tikz-ultra 的边界
+
+两者按**交付格式和生产工作流**区分，不按图的主题区分：
+
+| 需求 | 选择 |
+| --- | --- |
+| 泛化的“画图”、图片型论文配图、`.drawio`、`.excalidraw`、Matplotlib、PNG/SVG/PDF | `figure-ultra` |
+| TikZ/PGF/PGFPlots、`.tex`、`tikzpicture`、LaTeX 原生嵌入或 TikZ 编译调试 | `tikz-ultra` |
+
+流程图、架构图、神经网络图和数据图都可能由两者表达，因此主题词不负责裁决。用户指定输出格式时格式优先；未指定时默认使用 `figure-ultra`。
+
 ## 引擎路由
 
 | 需求特征 | 引擎 | 输出 |
